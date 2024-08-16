@@ -28,3 +28,10 @@ This project is a simple implementation of the classic Snake game using Java. It
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/vasanthkrishnan/snake-game-java.git
+   ```
+
+2. **Run**
+   ```bash
+   javac App.java
+   java App
+   ```
