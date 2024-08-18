@@ -22,6 +22,7 @@ This project is a simple implementation of the classic Snake game using Java. It
 ## Screenshots
 
 ![Game Screenshot](ScreenShots/snake1.png)
+![Game Screenshot](ScreenShots/snake2.png)
 
 ## Installation
 
