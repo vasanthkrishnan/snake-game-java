@@ -31,6 +31,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener
     int velocityY;
 
     boolean gameOver = false;
+    boolean isPaused = false;
 
     SnakeGame(int boardWidth, int boardHeight)
     {
@@ -78,13 +79,13 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener
 
 
         g.setColor(Color.yellow);
-        g.fill3DRect(snakeHead.x * tileSize, snakeHead.y * tileSize, tileSize, tileSize, true);
+        g.fillOval(snakeHead.x * tileSize, snakeHead.y * tileSize, tileSize, tileSize);
 
 
         for(int i = 0; i < snakeBody.size(); i++)
         {
             Tile snakePart = snakeBody.get(i);
-            g.fill3DRect(snakePart.x * tileSize, snakePart.y * tileSize, tileSize, tileSize, true);
+            g.fillOval(snakePart.x * tileSize, snakePart.y * tileSize, tileSize, tileSize);
         }
 
         if (gameOver)
@@ -96,17 +97,49 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener
             int xGameOver = (boardWidth - metrics.stringWidth(gameOverText)) / 2;
             int yGameOver = ((boardHeight - metrics.getHeight()) / 2) + metrics.getAscent();
             int xScore = (boardWidth - metrics.stringWidth(scoreText)) / 2;
-            int yScore = yGameOver + metrics.getHeight() + 10; // Adding 10 for spacing between lines
+            int yScore = yGameOver + metrics.getHeight() + 10; 
             g.setColor(Color.red);
             g.drawString(gameOverText, xGameOver, yGameOver);
             g.drawString(scoreText, xScore, yScore);
+
+            g.setFont(new Font("Arial", Font.PLAIN, 16));
+            g.setColor(Color.white);
+            String restartText = "Press Enter to Restart";
+            int xRestart = (boardWidth - g.getFontMetrics().stringWidth(restartText)) / 2;
+            int yRestart = yScore + 30; 
+            g.drawString(restartText, xRestart, yRestart);
         }
         else
         {
             g.setFont(new Font("Arial", Font.PLAIN, 16));
             g.drawString("Score : " + String.valueOf(snakeBody.size()), tileSize - 16, tileSize);
+
+            if (isPaused) {
+                g.setFont(new Font("Arial", Font.BOLD, 40));
+                g.setColor(Color.white);
+                String pauseText = "Paused";
+                int xPause = (boardWidth - g.getFontMetrics().stringWidth(pauseText)) / 2;
+                int yPause = boardHeight / 2;
+                g.drawString(pauseText, xPause, yPause);
+            }
         }
     }
+
+    public void initializeGame() 
+    {
+        snakeHead = new Tile(5, 5);
+        snakeBody = new ArrayList<Tile>();
+        food = new Tile(10, 10);
+        random = new Random();
+        placeFood();
+        velocityX = 0;
+        velocityY = 0;
+        gameOver = false;
+        isPaused = false;
+        gameLoop = new Timer(100, this);
+        gameLoop.start();
+    }
+
     public void placeFood() 
     {
         boolean onSnake;
@@ -179,11 +212,14 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-        move();
-        repaint();
-        if(gameOver)
+        if(!isPaused)
         {
-            gameLoop.stop(); 
+            move();
+            repaint();
+            if(gameOver)
+            {
+                gameLoop.stop(); 
+            }
         }
     }
 
@@ -211,6 +247,16 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener
         {
             velocityX = 1;
             velocityY = 0;
+        }
+        else if(e.getKeyCode() == KeyEvent.VK_SPACE)
+        {
+            isPaused = !isPaused;
+            repaint();
+        }
+        else if(e.getKeyCode() == KeyEvent.VK_ENTER && gameOver)
+        {
+            initializeGame();
+            repaint(); 
         }
     }
 
